@@ -2,9 +2,9 @@
 const nextConfig = {
   reactStrictMode: true,
   images: {
-    domains: ["m.media-amazon.com"],
+    domains: ["m.media-amazon.com","burst.shopifycdn.com"],
   },
-  hostname: "m.media-amazon.com"
+  hostname: "burst.shopifycdn.com"
 }
 
 module.exports = nextConfig
