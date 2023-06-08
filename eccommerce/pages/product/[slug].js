@@ -13,7 +13,7 @@ const Slug = ({buyNow, addToCart, products, variant}) => {
    const [size, setSize] = useState(products.size)
    const checkServiceAbility = async () => {
 
-      let pins = await fetch('http://localhost:3000/api/pincode')
+      let pins = await fetch(`${process.env.NEXT_PUBLIC_HOST}/api/pincode`)
       let pinJson = await pins.json()
       if(pinJson.includes(parseInt(pin))){
          setservice(true)
@@ -43,7 +43,7 @@ const Slug = ({buyNow, addToCart, products, variant}) => {
       }
    }
 const refreshVAriant = (newColor , newSize) => {
-   let url=`http://localhost:3000/product/${variant[newColor][newSize]['slug']}`
+   let url=`${process.env.NEXT_PUBLIC_HOST}/product/${variant[newColor][newSize]['slug']}`
 window.location = url
 }
  const onChangePin = (e)=>{
@@ -172,7 +172,7 @@ window.location = url
 }
 export async function getServerSideProps(context) {
    if (!mongoose.connections[0].readyState) {
-      await mongoose.connect(process.env.MONGO_URI)
+      await mongoose.connect(process.env.NEXT_PUBLIC_MONGO_URI)
    }
    let products = await Product.findOne({slug: context.query.slug})
    let variants = await Product.find({ title: products.title })

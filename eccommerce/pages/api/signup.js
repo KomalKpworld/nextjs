@@ -15,7 +15,8 @@ const handler = async (req, res) => {
 
 
         await u.save()
-        res.status(200).send("success")
+        res.status(200).send({
+            success: true, message: "User created successfully", user: u})
     } else {
         res.status(405).send(`Method ${req.method} not allowed`);
     }

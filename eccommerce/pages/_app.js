@@ -4,15 +4,25 @@ import '@/styles/globals.css'
 import { set } from 'mongoose'
 import { useRouter } from 'next/router'
 import { useEffect, useState } from 'react'
+import LoadingBar from 'react-top-loading-bar'
 
 export default function App({ Component, pageProps }) {
   const [cart, setCart] = useState({})
   const [subTotal, setSubTotal] = useState(0)
   const [user, setUser] = useState({ value: null })
-  const [key, setKey] = useState(0)
+  const [key, setKey] = useState()
+  const [progress, setProgress] = useState(0)
   const router = useRouter()
   useEffect(() => {
+    router.events.on('routeChangeStart', () => {
+      setProgress(40)
+    })
+
+    router.events.on('routeChangeComplete', () => {
+      setProgress(100)
+    })
     try {
+
       const cart = localStorage.getItem('cart')
       if (localStorage.getItem('cart')) {
         setCart(JSON.parse(cart))
@@ -59,59 +69,66 @@ export default function App({ Component, pageProps }) {
     setUser({ value: null })
     setKey(Math.random())
   }
-    const addToCart = (itemCode, qty, price, name, size, variant) => {
-      let newCart = cart
-      if (itemCode in cart) {
-        newCart[itemCode].qty = cart[itemCode].qty + qty
+  const addToCart = (itemCode, qty, price, name, size, variant) => {
+    let newCart = cart
+    if (itemCode in cart) {
+      newCart[itemCode].qty = cart[itemCode].qty + qty
 
-      } else {
-        newCart[itemCode] = {
-          qty: 1,
-          price,
-          name,
-          size,
-          variant
-        }
-        setCart(newCart)
-        saveCart(newCart)
+    } else {
+      newCart[itemCode] = {
+        qty: 1,
+        price,
+        name,
+        size,
+        variant
       }
-    }
-
-    const buyNow = async (itemCode, qty, price, name, size, variant) => {
-      saveCart({})
-      let newCart = { itemCode: { qty, price, name, size, variant } }
-
       setCart(newCart)
       saveCart(newCart)
-
-
-      router.push('/checkout')
-
     }
-    const clearCart = () => {
-      setCart({})
-      saveCart({})
-
-    }
-
-    return <>
-      <Navbar
-        logout={logout}
-        user={user}
-        cart={cart}
-        key={key}
-        clearCart={clearCart}
-        removeFromCart={removeFromCart}
-        addToCart={addToCart}
-        subTotal={subTotal} />
-      <Component
-        buyNow={buyNow}
-        cart={cart}
-        clearCart={clearCart}
-        removeFromCart={removeFromCart}
-        addToCart={addToCart}
-        subTotal={subTotal}
-        {...pageProps} />
-      <Footer />
-    </>
   }
+
+  const buyNow = async (itemCode, qty, price, name, size, variant) => {
+    saveCart({})
+    let newCart = { itemCode: { qty, price, name, size, variant } }
+
+    setCart(newCart)
+    saveCart(newCart)
+
+
+    router.push('/checkout')
+
+  }
+  const clearCart = () => {
+    setCart({})
+    saveCart({})
+
+  }
+
+  return <>
+    <LoadingBar
+      color='#f11946'
+      waitingTime={300}
+      progress={progress}
+      onLoaderFinished={() => setProgress(0)}
+    />
+    {key && <Navbar
+      logout={logout}
+      user={user}
+      cart={cart}
+      key={key}
+      clearCart={clearCart}
+      removeFromCart={removeFromCart}
+      addToCart={addToCart}
+      subTotal={subTotal} />
+    }
+    <Component
+      buyNow={buyNow}
+      cart={cart}
+      clearCart={clearCart}
+      removeFromCart={removeFromCart}
+      addToCart={addToCart}
+      subTotal={subTotal}
+      {...pageProps} />
+    <Footer />
+  </>
+}

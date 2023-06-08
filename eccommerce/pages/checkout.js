@@ -2,12 +2,18 @@ import React from 'react'
 import Link from 'next/link'
 import { useRef } from 'react';
 import { AiOutlineShoppingCart, AiFillCloseCircle, AiFillPlusCircle, AiFillMinusCircle } from 'react-icons/ai';
+import Head from 'next/head';
 
 const Checkout = ({ cart, clearCart, removeFromCart, addToCart, subTotal }) => {
   return (
     <div>
+
+
       <div className="container  px-2 sm:m-auto ">
         <h1 className="text-center font-bold text-2xl my-5">Checkout</h1>
+        <Head>
+          <meta name="viewport" content="width=device-width, height=device-height, initial-scale=1.0, maximum-scale=1.0" />
+        </Head>
         <h2>1. Delivery Details</h2>
         <div className='mx-auto flex my-2'>
           <div className='px-2 w-1/2'>

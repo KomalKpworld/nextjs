@@ -1,16 +1,23 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import Link from 'next/link';
-import Router from 'next/router';
+import {useRouter} from 'next/router';
 const Login = () => {
-  const [email, setEmail] = React.useState()
-  const [password, setPassword] = React.useState()
+const router=useRouter();
+  const [email, setEmail] = React.useState('')
+  const [password, setPassword] = React.useState('')
+  useEffect(() => {
+    if (localStorage.getItem('token')) {
+      window.location.href = '/';
+    }
+  })
   const handleSubmit = async (e) => {
     try {
       e.preventDefault();
       const data = { email, password };
-      const response = await fetch('http://localhost:3000/api/login', {
+   console.log(data);
+      const response = await fetch(`${process.env.NEXT_PUBLIC_HOST }/api/login`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
@@ -18,8 +25,21 @@ const Login = () => {
         body: JSON.stringify(data)
       })
       console.log(response)
+      if (response.status === 400) {
+        toast.error('Invalid credentials', {
+          position: "top-left",
+          autoClose: 5000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+          theme: "dark",
+        });
+        return;
+      }
       const json = await response.json();
-      console.log(json);
+      const result = json.message;
       setEmail('');
       setPassword('');
       if (json.message === 'success') {
@@ -35,7 +55,7 @@ const Login = () => {
           theme: "dark",
         });
         setTimeout(() => {
-          Router.push('http://localhost:3000');
+          router.push(`${process.env.NEXT_PUBLIC_HOST}`);
         }, (1000))
       }
     } catch (error) {

@@ -7,13 +7,14 @@ const handler = async (req, res) => {
 
     if (req.method === 'POST') {
         let data = req.body
-        console.log(data.password)
 
         if (!data.email || !data.password) {
             return res.status(400).send("Please enter all fields")
-        }
+        }  
         let user = await User.findOne({ email: data.email })
-        console.log(CryptoJS.AES.decrypt(user.password, 'secret key 123').toString())
+        if (!user) {
+            return res.status(400).send("User not found")
+        }
         var bytes = CryptoJS.AES.decrypt(user.password, 'secret key 123');
         var originalText = bytes.toString(CryptoJS.enc.Utf8);
         if (user) {

@@ -6,12 +6,10 @@ import { AiOutlineShoppingCart, AiFillCloseCircle, AiFillPlusCircle, AiFillMinus
 import {MdAccountCircle} from 'react-icons/md'
 import { useState } from 'react';
 const Navbar = ({ logout ,user, cart, clearCart, removeFromCart, addToCart, subTotal }) => {
- const [dropdown , setDropdown] = useState(false)
+ const [dropdown , setDropDown] = useState(false)
 
   const ref = useRef();
-const setDropDown= () => {
-  setDropdown(!dropdown)
-}
+
 
   const toggleCart = () => {
     if (ref.current.classList.contains('translate-x-full')) {
@@ -38,17 +36,17 @@ const setDropDown= () => {
           <Link href="/stickers">Stickers</Link>
         </ul>
       </div>
-      <div  className="cart absolute right-0 top-4 mx-5 cursor-pointer flex items-center">
-    <a onMouseOver={() => setDropDown(true)} onMouseLeave={ () => setDropDown(false)}>
-     {dropdown && <div onMouseOver={() => {setDropDown(true)}} onMouseLeave={ () => {setDropDown(false)}}
-      className="dropdown absolute right-9 bg-pink-300 top-7 px-5 py-4 rounded-md w-32">
-        <ul className="flex flex-col items-center space-y-2">
-          <li className='py-2 text-sm hover: text-pink-600'>Orders</li>
-          <li className='py-2 text-sm hover: text-pink-600' >Profile</li>
-         <a onClick={logout}> <li className='py-2 text-sm hover: text-pink-600'>Logout</li> </a> 
-        </ul>
-      </div>
-  }
+      <div className="cart absolute right-0 top-4 mx-5 cursor-pointer flex items-center">
+        <a onMouseOver={() => setDropDown(true)} onMouseLeave={() => setDropDown(false)}>
+          {dropdown && <div onMouseOver={() => { setDropDown(true) }} onMouseLeave={() => { setDropDown(false) }}
+            className="dropdown absolute right-9 bg-pink-300 top-7 px-5 py-4 rounded-md w-32">
+            <ul className="flex flex-col items-center space-y-2">
+              <Link href="/orders">  <li className='py-2 text-sm hover: text-pink-600'>Orders</li></Link>
+              <li className='py-2 text-sm hover: text-pink-600' >Profile</li>
+              <span onClick={logout}> <li className='py-2 text-sm hover: text-pink-600'>Logout</li> </span>
+            </ul>
+          </div>
+          }
    { user.value &&  <MdAccountCircle  className="text-xl md:text-2xl mx-2" />}
    </a>
     {!user.value && <Link href="/login">

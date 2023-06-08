@@ -1,17 +1,22 @@
-import React from 'react';
+import React, { useEffect } from 'react';
+import {useRouter} from 'next/router';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 const Signup = () => {
-    const [name, setName] = React.useState()
-    const [email, setEmail] = React.useState()
-    const [password, setPassword] = React.useState()
-
-
+    const [name, setName] = React.useState('')
+    const [email, setEmail] = React.useState('')
+    const [password, setPassword] = React.useState('')
+const router= useRouter()
+useEffect(() => {
+    if (localStorage.getItem('token')) {
+        window.location.href = '/';
+    }
+})
     const handleSubmit = async (e) => {
 
         e.preventDefault();
         const data = { name, email, password };
-        const response = await fetch('http://localhost:3000/api/signup', {
+        const response = await fetch(`${process.env.NEXT_PUBLIC_HOST}/api/signup`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
@@ -19,7 +24,7 @@ const Signup = () => {
             body: JSON.stringify(data)
         })
         const json = await response.json();
-        console.log(json);
+     if(json){
         setEmail('');
         setPassword('');
         setName('');
@@ -33,7 +38,10 @@ const Signup = () => {
             progress: undefined,
             theme: "dark",
         });
+
+        router.push(`${process.env.NEXT_PUBLIC_HOST}/login`)
     };
+}
 
     const handleChange = (e) => {
         if (e.target.name === 'name') {
