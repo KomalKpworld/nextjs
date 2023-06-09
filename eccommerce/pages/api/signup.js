@@ -10,7 +10,7 @@ const handler = async (req, res) => {
 
         let u = new User({
             name: name, email: email,
-            password: CryptoJS.AES.encrypt(req.body.password, 'secret key 123').toString()
+            password: CryptoJS.AES.encrypt(req.body.password,`${process.env.PASSWORD_SECRET_KEY}`).toString()
         })
 
 

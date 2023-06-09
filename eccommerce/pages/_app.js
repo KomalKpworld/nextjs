@@ -35,8 +35,9 @@ export default function App({ Component, pageProps }) {
     let token = localStorage.getItem('token')
     if (token) {
       setUser({ value: true })
-      setKey(Math.random())
+    
     }
+    setKey(Math.random())
 
   }, [router.query])
   const saveCart = (myCart) => {
@@ -87,14 +88,11 @@ export default function App({ Component, pageProps }) {
     }
   }
 
-  const buyNow = async (itemCode, qty, price, name, size, variant) => {
-    saveCart({})
-    let newCart = { itemCode: { qty, price, name, size, variant } }
-
+  const buyNow = async (itemCode, qty, price, name, size, variant) => {  
+    let newCart = {}
+    newCart[itemCode] = { qty, price, name, size, variant }
     setCart(newCart)
     saveCart(newCart)
-
-
     router.push('/checkout')
 
   }

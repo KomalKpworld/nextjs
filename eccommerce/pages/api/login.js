@@ -15,12 +15,12 @@ const handler = async (req, res) => {
         if (!user) {
             return res.status(400).send("User not found")
         }
-        var bytes = CryptoJS.AES.decrypt(user.password, 'secret key 123');
+        var bytes = CryptoJS.AES.decrypt(user.password, `${process.env.PASSWORD_SECRET_KEY}`);
         var originalText = bytes.toString(CryptoJS.enc.Utf8);
         if (user) {
             if (user.email === data.email &&
                 req.body.password === originalText) {
-                var token = jwt.sign({ email: user.email, name: user.name }, 'jwtScret')
+                var token = jwt.sign({ email: user.email, name: user.name }, `${process.env.JWT_SECRET_KEY}`)
 
                 return res.status(200).send({ message: "success", token: token })
             }

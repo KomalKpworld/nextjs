@@ -1,9 +1,31 @@
-import React from 'react'
-import mongoose from 'mongoose'
-import OrderModel from '@/models/Order'
+import React, { useEffect } from 'react'
+import { useRouter } from 'next/router'
+import Link from 'next/link'
 const Order = ({ subTotal }) => {
+  const [orders, setOrders] = React.useState([])
+  const router = useRouter()
+  useEffect(() => {
+    const fetchOrders = async () => {
+      let a = await fetch(`${process.env.NEXT_PUBLIC_HOST}/api/myorders`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ token: localStorage.getItem('token') })
+      })
+      let res = await a.json()
+      setOrders(res.orders)
+      console.log(res)
+    }
+    if (!localStorage.getItem('token')) {
+      router.push('/')
+    } else {
+      fetchOrders()
+    }
+  },[])
+
   return (
-    <div>
+    <div className='min-h-screen bg-white dark:bg-neutral-900'>
       <h1 className='text-2xl font-bold text-center'>My Order </h1>
       <div className="flex flex-col">
         <div className="overflow-x-auto sm:-mx-6 lg:-mx-8">
@@ -12,31 +34,24 @@ const Order = ({ subTotal }) => {
               <table className="min-w-full text-left text-sm font-light">
                 <thead className="border-b font-medium dark:border-neutral-500">
                   <tr>
-                    <th scope="col" className="px-6 py-4">#</th>
-                    <th scope="col" className="px-6 py-4">First</th>
-                    <th scope="col" className="px-6 py-4">Last</th>
-                    <th scope="col" className="px-6 py-4">Handle</th>
+                    <th scope="col" className="px-6 py-4">id</th>
+                    <th scope="col" className="px-6 py-4">Name</th>
+                    <th scope="col" className="px-6 py-4">Price</th>
+                    <th scope="col" className="px-6 py-4">Details</th>
                   </tr>
                 </thead>
                 <tbody>
-                  <tr className="border-b dark:border-neutral-500">
-                    <td className="whitespace-nowrap px-6 py-4 font-medium">1</td>
-                    <td className="whitespace-nowrap px-6 py-4">Mark</td>
-                    <td className="whitespace-nowrap px-6 py-4">Otto</td>
-                    <td className="whitespace-nowrap px-6 py-4">@mdo</td>
-                  </tr>
-                  <tr className="border-b dark:border-neutral-500">
-                    <td className="whitespace-nowrap px-6 py-4 font-medium">2</td>
-                    <td className="whitespace-nowrap px-6 py-4">Jacob</td>
-                    <td className="whitespace-nowrap px-6 py-4">Thornton</td>
-                    <td className="whitespace-nowrap px-6 py-4">@fat</td>
-                  </tr>
-                  <tr className="border-b dark:border-neutral-500">
-                    <td className="whitespace-nowrap px-6 py-4 font-medium">3</td>
-                    <td className="whitespace-nowrap px-6 py-4">Larry</td>
-                    <td className="whitespace-nowrap px-6 py-4">Wild</td>
-                    <td className="whitespace-nowrap px-6 py-4">@twitter</td>
-                  </tr>
+                  {orders?.map((item) => {
+                    return <tr key={item?.id} className="border-b dark:border-neutral-500">
+                      <td className="whitespace-nowrap px-6 py-4 font-medium">{item?.orderId}</td>
+                      <td className="whitespace-nowrap px-6 py-4">{item?.name}</td>
+                      <td className="whitespace-nowrap px-6 py-4">{item?.amount}</td>
+                      <td className="whitespace-nowrap px-6 py-4">
+                        <Link href={'/orders?id=' + item?.orderId} > Details</Link>
+                      </td>
+                    </tr>
+                  })}
+                
                 </tbody>
               </table>
             </div>
@@ -46,18 +61,6 @@ const Order = ({ subTotal }) => {
 
     </div>
   )
-}
-export async function getServerSideProps(context) {
-  if (!mongoose.connections[0].readyState) {
-     await mongoose.connect(process.env.NEXT_PUBLIC_MONGO_URI)
-  }
-  let orders = await OrderModel.find({})
-
-  return {
-     props: {
-      orders: JSON.parse(JSON.stringify(orders)),
-     }
-  }
 }
 
 export default Order
